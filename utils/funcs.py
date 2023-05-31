@@ -10,4 +10,12 @@ def load_operations():
         return operations
 
 
+def executed_operations(data):
+    executed_operation = []
+
+    for item in data:
+        if 'EXECUTED' in item.values():
+            executed_operation.append(item)
+
+    return executed_operation
 
