@@ -27,6 +27,11 @@ def get_latest_executed_operations(all_operations):
 
 
 def get_operation_date(operation_info: dict):
+    """
+    Функция возвращает дату в формате "дд.мм.гггг", если она была записана в массиве
+    :param operation_info: dict
+    :return: str
+    """
     if 'date' in operation_info.keys():
         convert_date = str(arrow.get(operation_info['date']).date())
         date_list = convert_date.split('-')
@@ -38,6 +43,13 @@ def get_operation_date(operation_info: dict):
 
 
 def get_card(operation_info: dict):
+    """
+    Функция возвращает в зашифрованном виде, если информация есть в массиве:
+    Платежную систему карты отправителя и ее номер в формате 0000 00** **** 0000
+    Последние 4 цифры карты полчателя в формате **0000
+    :param operation_info: dict
+    :return: str
+    """
     if 'to' in operation_info.keys():
         security_card_num_to = '**' + operation_info['to'][-4::]
     else:
@@ -51,6 +63,14 @@ def get_card(operation_info: dict):
 
 
 def get_operations_details(operation_info: dict):
+    """
+    Функция возвращает строку содержащую в себе инфо об операции в формате:
+    "дата перевода, род операции
+    карта отправителя -> карта получателя
+    сумма в рублях"
+    :param operation_info: dict
+    :return: str
+    """
     return f"""{get_operation_date(operation_info)} {operation_info['description']}
 {get_card(operation_info)[0]} -> {get_card(operation_info)[1]}
 {operation_info['operationAmount']['amount']} руб.
