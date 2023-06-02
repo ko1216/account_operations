@@ -1,12 +1,16 @@
 import json
 import arrow
+import os
 
 
 def load_operations():
-    with open('D:/Any_Python_Projects/account_operations/operations.json', 'r', encoding='utf-8-sig') as f:
-        """
-        Функция из файла json распаковывает и возвращает список операций
-        """
+    """
+    Функция строит универсальный путь до файла, после этого открывает его и рапаковывает из json
+    :return: list
+    """
+    operations_path = os.path.join(os.path.dirname('D:/Any_Python_Projects/account_operations/'), 'operations.json')
+
+    with open(operations_path, 'r', encoding='utf-8-sig') as f:
         operations = json.load(f)
         return operations
 
