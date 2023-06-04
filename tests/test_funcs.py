@@ -1,6 +1,7 @@
 import pytest
 
-from utils.funcs import load_operations, get_latest_executed_operations, get_operation_date, get_card
+from utils.funcs import load_operations, get_latest_executed_operations, get_operation_date, mask_account_number, \
+    data_sorted_operations
 
 
 @pytest.mark.parametrize('expected', [
@@ -25,8 +26,7 @@ def test_get_latest_executed_operations2():
 
 
 @pytest.mark.parametrize('operation_info, expected', [
-    ({'date': '2018-12-24T20:16:18.819037'}, '24.12.2018'),
-    ({}, 'Дата не записана')
+    ({'date': '2018-12-24'}, '24.12.2018'),
 ])
 def test_get_operation_date(operation_info, expected):
     assert get_operation_date(operation_info) == expected
@@ -37,7 +37,18 @@ def test_get_operation_date(operation_info, expected):
      'какой бы не был длинный текст Платежной системы 0000 11** **** 3333', '**3333'),
     ({'from': 'какой бы не был длинный текст Платежной системы 0000111122223333'},
      'какой бы не был длинный текст Платежной системы 0000 11** **** 3333', 'Нет данных о получателе'),
-    ({'to': '0000111122223333'}, 'Нет данных об отправителе', '**3333')
+    ({'to': '0000111122223333'}, 'Нет данных об отправителе', '**3333'),
+    ({'from': 'счет 00001111222233334444'},
+     'счет 0000************4444', 'Нет данных о получателе')
 ])
-def test_get_card(operation_info, expected0, expected1):
-    assert get_card(operation_info) == (expected0, expected1)
+def test_mask_account_number(operation_info, expected0, expected1):
+    assert mask_account_number(operation_info) == (expected0, expected1)
+
+
+@pytest.mark.parametrize('operations, expected', [
+    ([{'date': '2018-06-24T00:46:32.422648'}, {'date': '2019-09-06T00:48:01.081967'}], True),
+    ([{'date': '2019-10-15'}, {'date': '2018-01-20'}], True)
+])
+def test_data_sorted_operations(operations, expected):
+    test_expected = data_sorted_operations(operations)[0]['date'] < data_sorted_operations(operations)[-1]['date']
+    assert test_expected == expected
